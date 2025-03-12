@@ -4,13 +4,17 @@ import { FaBars } from "react-icons/fa";
 import { FaMoneyBillWave, FaUserFriends, FaUniversity, FaBriefcase } from "react-icons/fa";
 import { useState } from "react";
 import { redirect } from "next/navigation";
+import { useSession, signOut } from 'next-auth/react';
+
 
 const Header = ({ toggleSidebar }) => {
+
+  const { data: session, status } = useSession();
 
   //userdetails
   const [isFiuserOpen, setFiuserOpen] = useState(false);
   return (
-    <header className="fixed w-full top-0 lg:flex lg:flex-col lg:w-[calc(100%-16rem)]">
+    <header className="lg:flex lg:flex-col">
       <nav className="bg-white p-4 lg:hidden flex space-x-3 text-gray-700 text-sm overflow-y-auto whitespace-nowrap md:hidden">
         <NavItem icon={<FaMoneyBillWave />} text="Payments" />
         <NavItem icon={<FaUserFriends />} text="Partners" />
@@ -64,20 +68,16 @@ const Header = ({ toggleSidebar }) => {
             </button>
             {isFiuserOpen && (
               <div className="absolute right-0 mt-3 w-50 bg-white shadow-lg rounded-lg p-4 z-20">
-                <p className="text-gray-700 font-medium">Ankit Wariyal</p>
-                <p className="text-gray-500 text-sm">wariyalankit1212@gmail.com</p>
+                <p className="text-gray-700 font-medium text-nowrap">{session.user.name}</p>
+                <p className="text-gray-500 text-sm">{session.user.mobileNumber}</p>
                 <hr className="my-2" />
-                <button className="w-full text-left text-red-500 hover:bg-gray-100 p-2 rounded">
+                <button className="w-full text-left text-red-500 hover:bg-gray-100 p-2 rounded" onClick={() => signOut({ callbackUrl: '/' })}>
                   Logout
                 </button>
               </div>
             )}
           </div>
         </div>
-
-
-
-
       </div>
       
     </header>
