@@ -16,7 +16,7 @@ const Page = () => {
     mobile: "",
         status: "",
     remark: "",
-    createdBy: session.user.id
+    createdBy: session?.user?.id || ""
   });
 
   const handleChange = (e) => {
