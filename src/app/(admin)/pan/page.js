@@ -6,8 +6,10 @@ import { useSession } from 'next-auth/react';
 const Page = () => {
   const router = useRouter();
   const { data: session } = useSession();
-//   const [showPanOptions, setShowPanOptions] = useState(false);
-//   const [showNewPanForm, setShowNewPanForm] = useState(false);
+  const [loading, setLoading] = useState(false); // Track upload progress
+  const [submitError, setSubmitError] = useState("");
+  //   const [showPanOptions, setShowPanOptions] = useState(false);
+  //   const [showNewPanForm, setShowNewPanForm] = useState(false);
   const [showRenewPanForm, setShowRenewPanForm] = useState(false);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
@@ -24,7 +26,7 @@ const Page = () => {
     aadharBack: null,
     aadharFront: null,
     previousPanImage: null,
-    blueBookImage:null,
+    blueBookImage: null,
     createdBy: session?.user?.id || '',
   });
 
@@ -43,39 +45,43 @@ const Page = () => {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
     if (name === "panOption") {
-        setShowRenewPanForm(value === "PAN Card Renewal");
-      }
+      setShowRenewPanForm(value === "PAN Card Renewal");
+    }
   };
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const formDataToSend = new FormData();
+    setLoading(true);  // Start loading
+    setSubmitError(""); // Clear previous error
 
+    const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value) {
         formDataToSend.append(key, value);
       }
     });
 
-
     try {
       const response = await fetch('/api/docupload', {
         method: 'POST',
         body: formDataToSend,
       });
-      
+
       const text = await response.text();
       console.log('Raw Server Response:', text);
       const data = JSON.parse(text);
 
       if (response.ok) {
         console.log('Document added:', data);
-        router.push('/documentlist');
+        router.push('/documentlist'); // Redirect on success
       } else {
-        console.error('Error:', data.message);
+        throw new Error(data.message || 'Failed to upload');
       }
     } catch (error) {
       console.error('Failed to save document:', error);
+      setSubmitError(error.message || "An error occurred while submitting.");
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -85,14 +91,14 @@ const Page = () => {
         <h2 className="text-xl font-semibold mb-4 text-start">Add Documents</h2>
         <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-            <div>
-              <label className="block text-gray-600 mb-1">PAN Card Options</label>
-              <select name="panOption" value={formData.panOption} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg">
-                <option value="">Select Option</option>
-                <option value="New PAN Card">New PAN Card</option>
-                <option value="PAN Card Renewal">PAN Card Renewal</option>
-              </select>
-            </div>
+          <div>
+            <label className="block text-gray-600 mb-1">PAN Card Options</label>
+            <select name="panOption" value={formData.panOption} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg">
+              <option value="">Select Option</option>
+              <option value="New PAN Card">New PAN Card</option>
+              <option value="PAN Card Renewal">PAN Card Renewal</option>
+            </select>
+          </div>
           {showRenewPanForm && (
             <div>
               <label className="block text-gray-600 mb-1">Previous PAN Image</label>
@@ -229,9 +235,16 @@ const Page = () => {
       <div className="sm:col-span-3 bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4 text-center">Actions</h2>
         <div className="flex flex-col gap-3">
-          <button className="w-full p-2 rounded border-2 border-green-500 bg-transparent hover:bg-green-500 hover:text-white" onClick={handleSave}>
-            Save
+          <button
+            className={`w-full p-2 rounded border-2 ${loading ? "border-gray-400 bg-gray-300 text-gray-600" : "border-green-500 bg-transparent hover:bg-green-500 hover:text-white"}`}
+            onClick={handleSave}
+            disabled={loading}
+          >
+            {loading ? "Uploading..." : "Save"}
           </button>
+
+          {/* Display error if submission fails */}
+          {submitError && <p className="text-red-500 text-sm mt-2">{submitError}</p>}
         </div>
       </div>
     </div>
