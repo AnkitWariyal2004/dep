@@ -1,10 +1,11 @@
-import fs from "fs";
-import path from "path";
-import { writeFile } from "fs/promises";
+// import fs from "fs";
+// import path from "path";
+// import { writeFile } from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
 import dbConnect from "@/lib/dbConnect";
 import Document from "@/lib/models/document";
 import { NextResponse } from "next/server"; 
+import { put } from "@vercel/blob";
 
 export async function POST(req) {
   await dbConnect();
@@ -21,47 +22,32 @@ export async function POST(req) {
     const status = formData.get("status");
     const remark = formData.get("remark") || "";
     const createdBy = formData.get("createdBy");
-    const panOption= formData.get("panOption");
+    const panOption = formData.get("panOption");
 
     // Extract files
     const photo = formData.get("photo");
     const signImage = formData.get("signImage");
     const aadharBack = formData.get("aadharBack");
-    const aadharFront = formData.get("aadharFront"); // ✅ Now declared
-    const  previousPanImage = formData.get("previousPanImage");
-    const  blueBookImage = formData.get("blueBookImage");
+    const aadharFront = formData.get("aadharFront");
+    const previousPanImage = formData.get("previousPanImage");
+    const blueBookImage = formData.get("blueBookImage");
 
-    // Function to save a file and return its path
-    async function saveFile(file, subDir) {
+    // Function to upload a file to Vercel Blob
+    async function uploadFile(file, subDir) {
       if (!file || file.size === 0) return ""; // If no file uploaded, return empty string
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Get file extension
-      const ext = path.extname(file.name).toLowerCase();
-      const fileName = `${uuidv4()}${ext}`; // Generate unique filename
-      const folderPath = path.join(process.cwd(), "public", "uploads", subDir);
-
-      // Create directory if it doesn't exist
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true });
-      }
-
-      const filePath = path.join(folderPath, fileName);
-      await writeFile(filePath, buffer);
-
-      return `/uploads/${subDir}/${fileName}`; // Relative path for frontend
+      const fileName = `${subDir}/${uuidv4()}-${file.name}`; // Unique filename
+      const { url } = await put(fileName, file, { access: "public" }); // Upload to Vercel Blob
+      return url; // Return the file URL
     }
 
-    // Save files
-    const photoPath = await saveFile(photo, "photo");
-    const signPath = await saveFile(signImage, "sign");
-    const aadharBackPath = await saveFile(aadharBack, "aadharback");
-    const aadharFrontPath = await saveFile(aadharFront, "aadharfront");
-    const  blueBookPath = await saveFile(blueBookImage,"bluebook");
-    const previousPanImagePath = await saveFile(previousPanImage, "previouspan");
-   
+    // Upload files to Vercel Blob
+    const photoPath = await uploadFile(photo, "photo");
+    const signPath = await uploadFile(signImage, "sign");
+    const aadharBackPath = await uploadFile(aadharBack, "aadharback");
+    const aadharFrontPath = await uploadFile(aadharFront, "aadharfront");
+    const blueBookPath = await uploadFile(blueBookImage, "bluebook");
+    const previousPanImagePath = await uploadFile(previousPanImage, "previouspan");
 
     // Create document in MongoDB
     const newDoc = await Document.create({
@@ -76,7 +62,7 @@ export async function POST(req) {
       createdBy,
       photo: photoPath,
       signImage: signPath,
-      blueBookImage:blueBookPath,
+      blueBookImage: blueBookPath,
       previousPanImage: previousPanImagePath,
       aadharBack: aadharBackPath,
       aadharFront: aadharFrontPath,
