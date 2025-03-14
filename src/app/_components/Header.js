@@ -1,14 +1,13 @@
 "use client";
 import { FiSearch, FiUser } from "react-icons/fi";
 import { FaBars } from "react-icons/fa";
-import { FaMoneyBillWave, FaUserFriends, FaUniversity, FaBriefcase } from "react-icons/fa";
+import { FaFileAlt, FaIdCard } from "react-icons/fa";
 import { useState } from "react";
 import { redirect } from "next/navigation";
 import { useSession, signOut } from 'next-auth/react';
 
 
 const Header = ({ toggleSidebar }) => {
-
   const { data: session, status } = useSession();
 
   //userdetails
@@ -16,10 +15,10 @@ const Header = ({ toggleSidebar }) => {
   return (
     <header className="lg:flex lg:flex-col">
       <nav className="bg-white p-4 lg:hidden flex space-x-3 text-gray-700 text-sm overflow-y-auto whitespace-nowrap md:hidden">
-        <NavItem icon={<FaMoneyBillWave />} text="Payments" />
-        <NavItem icon={<FaUserFriends />} text="Partners" />
-        <NavItem icon={<FaUniversity />} text="Banking" />
-        <NavItem icon={<FaBriefcase />} text="Payroll" />
+        <NavItem icon={<FaIdCard />} text="Pan" />
+        <NavItem icon={<FaFileAlt />} text="Insurance" />
+        {/* <NavItem icon={<FaUniversity />} text="Banking" />
+        <NavItem icon={<FaBriefcase />} text="Payroll" /> */}
       </nav>
       <hr className="lg:hidden"/>
     
@@ -41,10 +40,10 @@ const Header = ({ toggleSidebar }) => {
 
           {/* Navigation Menu (Visible only on Desktop) */}
           <nav className="hidden md:flex space-x-6 text-gray-700 text-sm">
-            <NavItem icon={<FaMoneyBillWave />} text="Payments" active />
-            <NavItem icon={<FaUserFriends />} text="Partners" />
-            <NavItem icon={<FaUniversity />} text="Banking" />
-            <NavItem icon={<FaBriefcase />} text="Payroll" />
+            <NavItem icon={<FaIdCard />} text="Pan" active />
+            <NavItem icon={<FaFileAlt />} text="Insurance" />
+            {/* <NavItem icon={<FaUniversity />} text="Banking" />
+            <NavItem icon={<FaBriefcase />} text="Payroll" /> */}
           </nav>
         </div>
 

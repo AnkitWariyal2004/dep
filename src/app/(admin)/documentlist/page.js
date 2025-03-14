@@ -1,12 +1,22 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+// import { useRouter } from "next/navigation";
 
 const Table = () => {
   const [data, setData] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [checkedItems, setCheckedItems] = useState({});
   const { data: session, status } = useSession();
+  // const router = useRouter(); // Initialize router
+
+  // Redirect if user is not authenticated or not an admin
+  // useEffect(() => {
+  //   if (status === "loading") return; // Wait for session to load
+  //   if (!session) {
+  //     router.push("/"); // Redirect to home page if not an admin
+  //   }
+  // }, [session, status, router]);
 
   useEffect(() => {
     const fetchData = async (role, id) => {

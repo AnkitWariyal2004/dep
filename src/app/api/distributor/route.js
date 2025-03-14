@@ -11,7 +11,7 @@ export async function POST(req) {
 
     // Parse request body
     const body = await req.json();
-    const { name, mobileNumber, password, address } = body;
+    const { name, mobileNumber, password, address,status } = body;
 
     // Check if all required fields are present
     if (!name || !mobileNumber || !password) {
@@ -49,6 +49,7 @@ export async function POST(req) {
       mobileNumber,
       password:hashedPassword,
       address,
+      status,
       userId: newUser._id, // Link UserId to Customer
     });
 

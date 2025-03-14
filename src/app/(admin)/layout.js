@@ -32,7 +32,7 @@ export default function RootLayout({ children }) {
         {
           title: "Distributer",
           children: [
-            { title: "Add Distributer", icon: "FaNetworkWired" },
+            { title: "Pan", icon: "FaNetworkWired" },
             { title: "Distributer List", icon: "FaSitemap" },
           ],
         },

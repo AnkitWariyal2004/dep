@@ -1,9 +1,43 @@
 "use client";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { redirect } from "next/navigation";
-import * as FaIcons from "react-icons/fa"; // Import all FontAwesome icons
+import * as FaIcons from "react-icons/fa";
 
 const Sidebar = ({ isOpen, setIsOpen, activeItem, setActiveItem, Menus }) => {
+  const pathname = usePathname(); // Get current URL path
+
+  useEffect(() => {
+    if (!pathname) return;
+
+    // Extract last part of URL (e.g., /customerlist → customerlist)
+    const currentPath = pathname.split("/").pop();
+    
+    let foundItem = null;
+
+    // Check if a menu item matches the path
+    Menus.forEach((item) => {
+      const formattedTitle = item.title.toLowerCase().replace(/\s+/g, "");
+      if (formattedTitle === currentPath) {
+        foundItem = item.title;
+      } else if (item.children) {
+        item.children.forEach((child) => {
+          const formattedChildTitle = child.title.toLowerCase().replace(/\s+/g, "");
+          if (formattedChildTitle === currentPath) {
+            foundItem = child.title;
+          }
+        });
+      }
+    });
+
+    // If we found a match, update the active item
+    if (foundItem) {
+      setActiveItem(foundItem);
+      console.log("Active Item Set:", foundItem);
+    }
+  }, [pathname, Menus, setActiveItem]); // Run effect when pathname changes
+
   return (
     <div className="">
       {/* Sidebar Overlay (Mobile) */}
@@ -44,17 +78,15 @@ const Sidebar = ({ isOpen, setIsOpen, activeItem, setActiveItem, Menus }) => {
         <nav className="flex-1 mt-4">
           <ul className="text-[1rem]">
             {Menus.map((item, index) => {
-              console.log("Menu Item:", item); // Debug: Check JSON structure
-              
-              const IconComponent = FaIcons[item.icon]; // Get icon dynamically
-              
+              const IconComponent = FaIcons[item.icon];
+
               return (
                 <div key={index}>
                   {item.children ? (
                     <>
                       <SectionTitle title={item.title} />
                       {item.children.map((child, childIndex) => {
-                        const ChildIconComponent = FaIcons[child.icon]; // Get child icon
+                        const ChildIconComponent = FaIcons[child.icon];
 
                         return (
                           <MenuItem
@@ -81,11 +113,6 @@ const Sidebar = ({ isOpen, setIsOpen, activeItem, setActiveItem, Menus }) => {
             })}
           </ul>
         </nav>
-
-        {/* Bottom Section
-        <div className="mt-10 rounded-md shadow-md">
-          <MenuItem icon={<FaIcons.FaCog />} text="Account & Settings" />
-        </div> */}
       </div>
     </div>
   );
@@ -99,7 +126,7 @@ const MenuItem = ({ icon, text, active, setActiveItem }) => (
     }`}
     onClick={() => {
       setActiveItem(text);
-      const path = `${text.trim().replace(/\s+/g, "").toLowerCase()}`;
+      const path = text.trim().replace(/\s+/g, "").toLowerCase();
       redirect(path);
     }}
   >

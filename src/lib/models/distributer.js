@@ -18,6 +18,10 @@ const distributorSchema = new mongoose.Schema({
         type:String,
         required:true
       },
+      status:{
+        type: String,
+        default: 'active'
+      },
       userId: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
       
   }, { timestamps: true });
