@@ -1,8 +1,8 @@
-import { connectDB } from "@/lib/db";
-import Documents from "@/models/Document";
+import  dbConnect  from "@/lib/dbConnect";
+import Documents from "@/lib/models/document";
 
 export async function PUT(req, { params }) {
-  await connectDB();
+  await dbConnect();
 
   const { id } = params;
   const body = await req.json();
