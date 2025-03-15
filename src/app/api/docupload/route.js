@@ -209,12 +209,12 @@ export async function POST(req) {
       status,
       remark,
       createdBy,
-      photo:"",
-      signImage:"",
-      blueBookImage:"",
-      previousPanImage:"",
-      aadharBack:"",
-      aadharFront:"",
+      photo,
+      signImage,
+      blueBookImage,
+      previousPanImage,
+      aadharBack,
+      aadharFront
     });
 
     return new Response(JSON.stringify({ success: true, data: newDoc }), { status: 200 });
