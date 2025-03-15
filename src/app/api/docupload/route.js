@@ -159,12 +159,12 @@ export async function POST(req) {
     const panOption= formData.get("panOption");
 
     // Extract files
-    // const photo = formData.get("photo");
-    // const signImage = formData.get("signImage");
-    // const aadharBack = formData.get("aadharBack");
-    // const aadharFront = formData.get("aadharFront"); // ✅ Now declared
-    // const  previousPanImage = formData.get("previousPanImage");
-    // const  blueBookImage = formData.get("blueBookImage");
+    const photo = formData.get("photo");
+    const signImage = formData.get("signImage");
+    const aadharBack = formData.get("aadharBack");
+    const aadharFront = formData.get("aadharFront"); // ✅ Now declared
+    const  previousPanImage = formData.get("previousPanImage");
+    const  blueBookImage = formData.get("blueBookImage");
 
     // Function to save a file and return its path
     // async function saveFile(file, subDir) {
