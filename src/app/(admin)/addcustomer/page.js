@@ -1,156 +1,104 @@
-"use client";
+'use client'
 import { useState } from "react";
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-const UserFormPage = () => {
-
-
+export default function SignupPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    mobile: "",
-    gender: "",
-    password:"",
-    referalcode:"",
+    mobileNumber: '',
+    password: '',
+    name: '',
   });
+
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
 
-  const SubmitForm = async (e) => {
-    e.preventDefault(); // Prevent page reload
-  
     try {
-      const response = await fetch("http://localhost:3000/api/student", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-  
+
       const data = await response.json();
-  
-      if (data.success) {
-        alert("✅ Form submitted successfully!");
-        setFormData({
-          name: "",
-          email: "",
-          mobile: "",
-          gender: "",
-          referalcode:"",
-        }); // Reset form fields
-      } else {
-        alert("❌ Error: " + data.message);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("❌ Error submitting form");
+      if (!response.ok) throw new Error(data.message || 'Signup failed');
+
+      setSuccess('Signup successful! You can now log in.');
+      setFormData({ mobileNumber: '', password: '', name: '' });
+      router.push('/customerlist');
+    } catch (err) {
+      setError(err.message);
     }
   };
 
-
+  if (status === 'loading' || !session) {
+    return <p className="text-center mt-10">Loading...</p>;
+  }
 
   return (
-    <div className="grid sm:grid-cols-12 gap-4 m-4 overflow-hidden">
-      {/* Left Side - Form Section */}
-      <div className="sm:col-span-9 bg-green-200 p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-start">User Form</h2>
+    <div className="flex justify-center items-center  bg-gray-50 p-6 sm:p-12">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8 sm:p-10">
+        {/* <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2> */}
 
-        {/* Form */}
-        <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Full Name */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {success && <p className="text-green-500 text-center mb-4">{success}</p>}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-gray-600 mb-1">Full Name</label>
+            <label className="block text-gray-700 font-medium mb-1">Full Name</label>
             <input
               type="text"
               name="name"
+              placeholder="Enter your name"
               value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your name"
-              className="w-full p-2 border border-gray-300 rounded-lg"
+              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
 
-          {/* Email */}
           <div>
-            <label className="block text-gray-600 mb-1">Email</label>
+            <label className="block text-gray-700 font-medium mb-1">Mobile Number</label>
             <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          {/* Mobile Number */}
-          <div>
-            <label className="block text-gray-600 mb-1">Mobile</label>
-            <input
-              type="number"
-              name="mobile"
-              value={formData.mobile}
-              onChange={handleChange}
+              type="text"
+              name="mobileNumber"
               placeholder="Enter your mobile number"
-              className="w-full p-2 border border-gray-300 rounded-lg"
+              value={formData.mobileNumber}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
 
-          {/* Class  */}
-
-          {/* Gender */}
           <div>
-            <label className="block text-gray-600 mb-1">Gender</label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-gray-600 mb-1">Referal Code</label>
+            <label className="block text-gray-700 font-medium mb-1">Password</label>
             <input
-              type="number"
-              name="mobile"
-              value={formData.referalcode}
+              type="password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
               onChange={handleChange}
-              placeholder="Enter Referal Code"
-              className="w-full p-2 border border-gray-300 rounded-lg"
+              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             />
           </div>
-        </form>
-      </div>
 
-      {/* Right Side - Actions */}
-      <div className="sm:col-span-3 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">Actions</h2>
-        <div className="flex flex-col gap-3">
-          <button className="w-full p-2 rounded border-2 border-green-500 bg-transparent hover:bg-green-500 hover:text-white" onClick={SubmitForm}>
-            Save
+          <button type="submit" className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            Add Customer
           </button>
-          <button className="w-full p-2 rounded border-2 border-green-500 bg-transparent hover:bg-green-500 hover:text-white">
-            Edit
-          </button>
-          <button className="w-full p-2 rounded border-2 border-blue-500 bg-transparent hover:bg-blue-500 hover:text-white">
-            Update
-          </button>
-          <button className="w-full p-2 rounded border-2 border-red-500 bg-transparent hover:bg-red-500 hover:text-white">
-            Delete
-          </button>
-        </div>
+        </form>
       </div>
     </div>
   );
-};
-
-export default UserFormPage;
+}

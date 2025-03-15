@@ -2,6 +2,7 @@ import Customer from "@/lib/models/customer";
 import User from "@/lib/models/user";
 import dbConnect from "@/lib/dbConnect";
 import { hash } from "bcryptjs";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
@@ -47,6 +48,7 @@ export async function POST(req) {
     const newCustomer = await Customer.create({
       name,
       mobileNumber,
+      password:hashedPassword,
       userId: newUser._id, // Link UserId to Customer
     });
 
@@ -69,5 +71,22 @@ export async function POST(req) {
       }),
       { status: 500 }
     );
+  }
+}
+
+
+export async function GET() {
+  // ✅ Step 1: Get all users
+  await dbConnect();
+  try{
+    const customers = await Customer.find();
+    // console.log("✅ Users:", users);
+        return NextResponse.json({ success: true, data: customers }, { status: 200 });
+
+  }catch(error){
+    return NextResponse.json(
+          { success: false, message: "Internal Server Error", error: error.message },
+          { status: 500 }
+        );
   }
 }

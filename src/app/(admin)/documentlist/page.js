@@ -1,14 +1,18 @@
 'use client'
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-// import { useRouter } from "next/navigation";
+// import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+// import { Router} from "next/router";
+ 
 
 const Table = () => {
   const [data, setData] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [checkedItems, setCheckedItems] = useState({});
   const { data: session, status } = useSession();
-  // const router = useRouter(); // Initialize router
+  const router = useRouter(); // Initialize router
+
 
   // Redirect if user is not authenticated or not an admin
   // useEffect(() => {
@@ -25,6 +29,7 @@ const Table = () => {
         const result = await response.json();
         if (result.success) {
           setData(result.data);
+          console.log(data)
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -75,7 +80,7 @@ const Table = () => {
                 session?.user?.role === "admin" && (
                   <>
                     <th className="px-4 py-2 text-left whitespace-nowrap">Created By</th>
-                    <th className="px-4 py-2 text-left whitespace-nowrap">Created On</th>
+                    <th className="px-4 py-2 text-left whitespace-nowrap">Edit</th>
                   </>
                 )
               }
@@ -98,13 +103,23 @@ const Table = () => {
                 <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.mobile}</td>
                 <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">{item.remark}</td>
                 {
-                session?.user?.role === "admin" && (
-                  <>
-                    <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.createdBy.name}</td>
-                    <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">{item.createdBy.updatedAt}</td>
-                  </>
-                )
-              }
+                  session?.user?.role === "admin" && (
+                    <>
+                      <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">
+                        {item.createdBy.name}
+                      </td>
+                      <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">
+                        <button
+                          onClick={() => router.push(`/edit?id=${item._id}`)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </>
+                  )
+                }
+
               </tr>
             ))}
           </tbody>

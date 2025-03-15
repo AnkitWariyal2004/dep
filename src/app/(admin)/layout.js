@@ -48,7 +48,7 @@ export default function RootLayout({ children }) {
           title: "Settings",
           children: [
             { title: "Settings", icon: "FaCogs" },
-            { title: "Change Password", icon: "FaKey" },
+            // { title: "Change Password", icon: "FaKey" },
             ],
         },
         // { title: "Settings", icon: "FaCog" },

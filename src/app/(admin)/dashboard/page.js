@@ -29,37 +29,6 @@ export default function Page() {
             router.push('/insurance');
           }}/>
         </div>
-        <div  className="flex justify-center cursor-pointer h-[200px]">
-          <Dashboard_C imageSrc="/Images/icons8-card-exchange.gif" text="PAN" fun={()=>{
-            router.push('/pan');
-          }}/>
-        </div>
-        <div  className="flex justify-center cursor-pointer h-[200px]">
-          <Dashboard_C imageSrc="/Images/icons8-card-exchange.gif" text="PAN" fun={()=>{
-            router.push('/pan');
-          }}/>
-        </div>
-        <div  className="flex justify-center cursor-pointer h-[200px]">
-          <Dashboard_C imageSrc="/Images/icons8-card-exchange.gif" text="PAN" fun={()=>{
-            router.push('/pan');
-          }}/>
-        </div>
-        <div  className="flex justify-center cursor-pointer h-[200px]">
-          <Dashboard_C imageSrc="/Images/icons8-card-exchange.gif" text="PAN" fun={()=>{
-            router.push('/pan');
-          }}/>
-        </div>
-        <div  className="flex justify-center cursor-pointer h-[200px]">
-          <Dashboard_C imageSrc="/Images/icons8-card-exchange.gif" text="PAN" fun={()=>{
-            router.push('/pan');
-          }}/>
-        </div>
-        <div  className="flex justify-center cursor-pointer h-[200px]">
-          <Dashboard_C imageSrc="/Images/icons8-card-exchange.gif" text="PAN" fun={()=>{
-            router.push('/pan');
-          }}/>
-        </div>
-        
     </div>
   );
 }
