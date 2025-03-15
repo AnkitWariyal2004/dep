@@ -15,8 +15,8 @@ const applicationSchema = new mongoose.Schema(
     },
     status: { type: String, enum: ["Pending", "Approved", "Rejected"], default: "Pending" },
     remark: { type: String },
-    aadharFront: { type: String, immutable: true },
-    aadharBack: { type: String, immutable: true },
+    aadharFront: { type: String, immutable: true }, //required true
+    aadharBack: { type: String, immutable: true },  //required true
     photo: { type: String, immutable: true },
     previousPanImage: { type: String, immutable: true },
     blueBookImage: { type: String, immutable: true },

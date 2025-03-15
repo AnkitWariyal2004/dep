@@ -159,43 +159,43 @@ export async function POST(req) {
     const panOption= formData.get("panOption");
 
     // Extract files
-    const photo = formData.get("photo");
-    const signImage = formData.get("signImage");
-    const aadharBack = formData.get("aadharBack");
-    const aadharFront = formData.get("aadharFront"); // ✅ Now declared
-    const  previousPanImage = formData.get("previousPanImage");
-    const  blueBookImage = formData.get("blueBookImage");
+    // const photo = formData.get("photo");
+    // const signImage = formData.get("signImage");
+    // const aadharBack = formData.get("aadharBack");
+    // const aadharFront = formData.get("aadharFront"); // ✅ Now declared
+    // const  previousPanImage = formData.get("previousPanImage");
+    // const  blueBookImage = formData.get("blueBookImage");
 
     // Function to save a file and return its path
-    async function saveFile(file, subDir) {
-      if (!file || file.size === 0) return ""; // If no file uploaded, return empty string
+    // async function saveFile(file, subDir) {
+    //   if (!file || file.size === 0) return ""; // If no file uploaded, return empty string
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+    //   const bytes = await file.arrayBuffer();
+    //   const buffer = Buffer.from(bytes);
 
-      // Get file extension
-      const ext = path.extname(file.name).toLowerCase();
-      const fileName = `${uuidv4()}${ext}`; // Generate unique filename
-      const folderPath = path.join(process.cwd(), "public", "uploads", subDir);
+    //   // Get file extension
+    //   const ext = path.extname(file.name).toLowerCase();
+    //   const fileName = `${uuidv4()}${ext}`; // Generate unique filename
+    //   const folderPath = path.join(process.cwd(), "public", "uploads", subDir);
 
-      // Create directory if it doesn't exist
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true });
-      }
+    //   // Create directory if it doesn't exist
+    //   if (!fs.existsSync(folderPath)) {
+    //     fs.mkdirSync(folderPath, { recursive: true });
+    //   }
 
-      const filePath = path.join(folderPath, fileName);
-      await writeFile(filePath, buffer);
+    //   const filePath = path.join(folderPath, fileName);
+    //   await writeFile(filePath, buffer);
 
-      return `/uploads/${subDir}/${fileName}`; // Relative path for frontend
-    }
+    //   return `/uploads/${subDir}/${fileName}`; // Relative path for frontend
+    // }
 
     // Save files
-    const photoPath = await saveFile(photo, "photo");
-    const signPath = await saveFile(signImage, "sign");
-    const aadharBackPath = await saveFile(aadharBack, "aadharback");
-    const aadharFrontPath = await saveFile(aadharFront, "aadharfront");
-    const  blueBookPath = await saveFile(blueBookImage,"bluebook");
-    const previousPanImagePath = await saveFile(previousPanImage, "previouspan");
+    // const photoPath = await saveFile(photo, "photo");
+    // const signPath = await saveFile(signImage, "sign");
+    // const aadharBackPath = await saveFile(aadharBack, "aadharback");
+    // const aadharFrontPath = await saveFile(aadharFront, "aadharfront");
+    // const  blueBookPath = await saveFile(blueBookImage,"bluebook");
+    // const previousPanImagePath = await saveFile(previousPanImage, "previouspan");
    
 
     // Create document in MongoDB
@@ -209,12 +209,12 @@ export async function POST(req) {
       status,
       remark,
       createdBy,
-      photo: photoPath,
-      signImage: signPath,
-      blueBookImage:blueBookPath,
-      previousPanImage: previousPanImagePath,
-      aadharBack: aadharBackPath,
-      aadharFront: aadharFrontPath,
+      photo,
+      signImage,
+      blueBookImage,
+      previousPanImage,
+      aadharBack,
+      aadharFront,
     });
 
     return new Response(JSON.stringify({ success: true, data: newDoc }), { status: 200 });
