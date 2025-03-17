@@ -225,7 +225,7 @@ const Page = () => {
             placeholder="Enter any remarks"
             className="w-full p-2 border border-gray-300 rounded-lg"
           />
-        </div></>:null
+        </div></>:""
          }
           {Object.keys(errors).map((key) => (
             errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>

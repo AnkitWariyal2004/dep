@@ -113,13 +113,13 @@ const Page = () => {
                 <option value="Approved">Approved</option>
                 <option value="Rejected">Rejected</option>
               </select>
-            </label> : null
+            </label> : ""
           }
 
           {
             session.user.role === "admin" ? <label>Remarks:
               <textarea name="remark" value={formData.remark} onChange={handleChange} placeholder="Enter any remarks" className="w-full p-2 border border-gray-300 rounded-lg" />
-            </label> : null
+            </label> : ""
           }
 
           {Object.keys(errors).map((key) => (errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>))}
