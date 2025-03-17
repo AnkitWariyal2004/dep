@@ -90,7 +90,7 @@ const Page = () => {
           <label>Date of Birth:
             <input type="date" name="dob" value={formData.dob} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" />
           </label>
-          <label>Fathers Name:
+          <label>Father&apos;s Name:
             <input type="text" name="fatherName" value={formData.fatherName} onChange={handleChange} placeholder="Enter Father's Name" className="w-full p-2 border border-gray-300 rounded-lg" />
           </label>
           <label>Mobile Number:
@@ -105,25 +105,21 @@ const Page = () => {
           <label>Aadhar Front:
             <input type="file" name="aadharFront" accept="image/*" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" />
           </label>
-          {
-            session.user.role === "admin" ? <label>Status:
-              <select name="status" value={formData.status} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg">
-                <option value="">Select Status</option>
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </label> : ""
-          }
-
-          {
-            session.user.role === "admin" ? <label>Remarks:
-              <textarea name="remark" value={formData.remark} onChange={handleChange} placeholder="Enter any remarks" className="w-full p-2 border border-gray-300 rounded-lg" />
-            </label> : ""
-          }
-
-          {Object.keys(errors).map((key) => (errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>))}
-          {submitError && <p className="text-red-500 text-sm mt-2">{submitError}</p>}
+          {session?.user?.role === "admin" && (
+            <>
+              <label>Status:
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg">
+                  <option value="">Select Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </label>
+              <label>Remarks:
+                <textarea name="remark" value={formData.remark} onChange={handleChange} placeholder="Enter any remarks" className="w-full p-2 border border-gray-300 rounded-lg" />
+              </label>
+            </>
+          )}
           {Object.keys(errors).map((key) => (errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>))}
           {submitError && <p className="text-red-500 text-sm mt-2">{submitError}</p>}
         </form>
