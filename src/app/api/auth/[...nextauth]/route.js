@@ -20,17 +20,17 @@ export const authOptions = {
         const user = await User.findOne({ mobileNumber: credentials.mobileNumber });
 
         if (!user) {
-          console.log("❌ User not found!");
+          // console.log("❌ User not found!");
           throw new Error("User not found");
         }
 
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) {
-          console.log("❌ Invalid password!");
+          // console.log("❌ Invalid password!");
           throw new Error("Invalid credentials");
         }
 
-        console.log("✅ User found:", user);
+        // console.log("✅ User found:", user);
 
         return {
           id: user._id.toString(),

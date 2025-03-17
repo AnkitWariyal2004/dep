@@ -9,7 +9,6 @@ export default function SignupPage() {
     mobileNumber: '',
     password: '',
     name: '',
-    referal: '',
   });
 
   const [error, setError] = useState(null);
@@ -35,7 +34,7 @@ export default function SignupPage() {
       if (!response.ok) throw new Error(data.message || 'Signup failed');
 
       setSuccess('Signup successful! You can now log in.');
-      setFormData({ mobileNumber: '', password: '', name: '', referal: '' });
+      setFormData({ mobileNumber: '', password: '', name: ''});
       router.push('/');
     } catch (err) {
       setError(err.message);
@@ -102,7 +101,7 @@ export default function SignupPage() {
           </div>
 
           {/* Referral Code (Optional) */}
-          <div>
+          {/* <div>
             <label className="block text-gray-700 font-medium mb-1">Referral Code (Optional)</label>
             <input
               type="text"
@@ -112,7 +111,7 @@ export default function SignupPage() {
               onChange={handleChange}
               className="w-full p-3 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
-          </div>
+          </div> */}
 
           {/* Signup Button */}
           <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition">

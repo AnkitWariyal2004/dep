@@ -32,7 +32,7 @@ export default function AuthPage() {
       alert(result.error);
     } else {
       router.refresh('/dashboard'); // Redirect to dashboard after login
-      alert('Login successful');
+      // alert('Login successful');
     }
   };
 

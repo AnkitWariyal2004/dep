@@ -30,16 +30,16 @@ export default function RootLayout({ children }) {
           ],
         },
         {
-          title: "Distributer",
+          title: "Services",
           children: [
             { title: "Pan", icon: "FaNetworkWired" },
-            { title: "Distributer List", icon: "FaSitemap" },
+            { title: "Insurance", icon: "FaFileAlt" },
           ],
         },
         {
           title:"documents",
           children: [
-            { title: "Add Document", icon: "FaFile" },
+            // { title: "Add Document", icon: "FaFile" },
             { title: "Document List", icon: "FaFileAlt" },
             ],
         },
@@ -57,19 +57,26 @@ export default function RootLayout({ children }) {
       Menus = [
         { title: "Dashboard", icon: "FaHome" },
         {
-          title: "Document",
+          title: "Services",
           children: [
-            { title: "Add Document", icon: "FaUser" },
-            { title: "Document List", icon: "FaThList" },
+            { title: "Pan", icon: "FaNetworkWired" },
+            { title: "Insurance", icon: "FaFileAlt" },
           ],
         },
         {
-          title: "Distributer",
+          title: "Document",
           children: [
-            { title: "Add Distributer", icon: "FaNetworkWired" },
-            { title: "Distributer List", icon: "FaSitemap" },
+            // { title: "Add Document", icon: "FaUser" },
+            { title: "Document List", icon: "FaThList" },
           ],
         },
+        // {
+        //   title: "Distributer",
+        //   children: [
+        //     { title: "Add Distributer", icon: "FaNetworkWired" },
+        //     { title: "Distributer List", icon: "FaSitemap" },
+        //   ],
+        // },
                 // { title: "Settings", icon: "FaCog" },
       ];
     }else if( session.user.role === "distributer"){

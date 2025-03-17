@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 // import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 // import { Router} from "next/router";
- 
+
 
 const Table = () => {
   const [data, setData] = useState([]);
@@ -99,7 +99,14 @@ const Table = () => {
                 <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.category}</td>
                 <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.name}</td>
                 <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.fatherName}</td>
-                <td className="px-4 py-2 text-green-600 font-semibold break-words max-w-[100px] overflow-hidden text-ellipsis">{item.status}</td>
+                <td
+                  className={`px-4 py-2 font-semibold break-words max-w-[100px] overflow-hidden text-ellipsis 
+                ${item.status === "Pending" ? "text-yellow-600" :
+                      item.status === "Rejected" ? "text-red-600" :
+                        "text-green-600"}`}
+                >
+                  {item.status}
+                </td>
                 <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.mobile}</td>
                 <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">{item.remark}</td>
                 {

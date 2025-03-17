@@ -200,31 +200,33 @@ const Page = () => {
               className="w-full p-2 border border-gray-300 rounded-lg"
             />
           </div>
-          <div>
-            <label className="block text-gray-600 mb-1">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Select Status</option>
-              <option value="Pending">Pending</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
+         {
+          session.user.role === "admin"? <><div>
+          <label className="block text-gray-600 mb-1">Status</label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          >
+            <option value="">Select Status</option>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
 
-            </select>
-          </div>
-          <div>
-            <label className="block text-gray-600 mb-1">Remark</label>
-            <textarea
-              name="remark"
-              value={formData.remark}
-              onChange={handleChange}
-              placeholder="Enter any remarks"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
+          </select>
+        </div>
+        <div>
+          <label className="block text-gray-600 mb-1">Remark</label>
+          <textarea
+            name="remark"
+            value={formData.remark}
+            onChange={handleChange}
+            placeholder="Enter any remarks"
+            className="w-full p-2 border border-gray-300 rounded-lg"
+          />
+        </div></>:null
+         }
           {Object.keys(errors).map((key) => (
             errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>
           ))}

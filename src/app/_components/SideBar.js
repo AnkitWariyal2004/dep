@@ -66,12 +66,13 @@ const Sidebar = ({ isOpen, setIsOpen, activeItem, setActiveItem, Menus }) => {
 
         {/* Logo */}
         <div className={`${isOpen ? "absolute" : "justify-center flex"}`}>
-          <Image
+          {/* <Image
             src="/Images/razorpay-logo.png"
             alt="Description of image"
             width={120}
             height={100}
-          />
+          /> */}
+          <h1 className="text-2xl font-bold text-gray-600">EmuRecharge</h1>
         </div>
 
         {/* Menu Items */}

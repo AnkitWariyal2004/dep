@@ -2,6 +2,7 @@ import dbConnect from "@/lib/dbConnect";
 import Distributer from "@/lib/models/distributer";
 import User from "@/lib/models/user";
 import { hash } from "bcryptjs";
+import Customer from "@/lib/models/customer";
 
 export async function POST(req) {
   try {
@@ -11,12 +12,12 @@ export async function POST(req) {
 
     // Parse request body
     const body = await req.json();
-    const { name, mobileNumber, password, address,status } = body;
+    const { name, mobileNumber, password, address, status } = body;
 
     // Check if all required fields are present
-    if (!name || !mobileNumber || !password) {
+    if (!name || !mobileNumber || !password || !address) {
       return new Response(
-        JSON.stringify({ message: "❌ Missing required fields" }),
+        JSON.stringify({ success: false, message: "❌ Missing required fields" }),
         { status: 400 }
       );
     }
@@ -25,8 +26,8 @@ export async function POST(req) {
     const existingUser = await User.findOne({ mobileNumber });
     if (existingUser) {
       return new Response(
-        JSON.stringify({ message: "❌ User already exists" }),
-        { status: 400 }
+        JSON.stringify({ success: false, message: "User already exists in the database" }),
+        { status: 400 } // 🔴 Changed from 500 to 400
       );
     }
 
@@ -43,32 +44,37 @@ export async function POST(req) {
 
     console.log("✅ User Created:", newUser);
 
-    // ✅ Step 2: Create Customer and link it to the User
-    const newDistributer = await Distributer.create({
+    const newCus= await Customer.create({
       name,
       mobileNumber,
       password:hashedPassword,
+      userId: newUser._id
+    })
+
+
+    // ✅ Step 2: Create Distributer and link it to the User
+    const newDistributer = await Distributer.create({
+      name,
+      mobileNumber,
+      password: hashedPassword,
       address,
       status,
-      userId: newUser._id, // Link UserId to Customer
+      userId: newUser._id, // Link UserId to Distributer
     });
 
-    console.log("✅ Customer Created:", newDistributer);
+    console.log("✅ Distributer Created:", newDistributer);
 
     return new Response(
-      JSON.stringify({
-        message: "✅ User and Distributer registered successfully",
-        user: newUser,
-        Distributer: newDistributer,
-      }),
-      { status: 201 }
+      JSON.stringify({ success: true, data: newDistributer }),
+      { status: 200 }
     );
   } catch (error) {
-    console.error("❌ Error creating user and customer:", error);
+    console.error("❌ Error creating user and distributer:", error);
     return new Response(
       JSON.stringify({
-        message: "❌ Error creating user and customer",
-        error: error.message,
+        success: false,
+        message: "Internal Server Error",
+        error: error.message, // 🔴 Show detailed error in response
       }),
       { status: 500 }
     );
