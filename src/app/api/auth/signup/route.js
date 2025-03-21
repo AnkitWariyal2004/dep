@@ -3,6 +3,7 @@ import User from "@/lib/models/user";
 import dbConnect from "@/lib/dbConnect";
 import { hash } from "bcryptjs";
 import { NextResponse } from "next/server";
+import Wallet from "@/lib/models/wallet";
 
 export async function POST(req) {
   try {
@@ -39,7 +40,7 @@ export async function POST(req) {
       name,
       mobileNumber,
       password: hashedPassword, // Store password in User only
-      role: role || "customer",
+      role: role||"customer",
     });
 
     console.log("✅ User Created:", newUser);
@@ -54,11 +55,17 @@ export async function POST(req) {
 
     console.log("✅ Customer Created:", newCustomer);
 
+    const newWallet = await Wallet.create({
+      customerId: newCustomer._id,
+      balance: 0
+    })
+
     return new Response(
       JSON.stringify({
         message: "✅ User and Customer registered successfully",
         user: newUser,
         customer: newCustomer,
+        wallet: newWallet
       }),
       { status: 201 }
     );

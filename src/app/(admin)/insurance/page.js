@@ -24,6 +24,9 @@ const Page = () => {
     aadharFront: null,
     previousPanImage: null,
     blueBookImage: null,
+    type:"debit",
+    ammount:100,
+    userId:session?.user?.id || '',
     createdBy: session?.user?.id || '',
   });
 
@@ -47,6 +50,54 @@ const Page = () => {
     e.preventDefault();
     setLoading(true);
     setSubmitError("");
+    let newErrors = {};
+  
+    // Required Field Validations
+    if (!formData.dob) {
+      newErrors.dob = "Date of Birth is required";
+    }
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required.";
+    }
+    if (!formData.fatherName.trim()) {
+      newErrors.fatherName = "Father's Name is required.";
+    }
+    if (!/^\d{10}$/.test(formData.mobile)) {
+      newErrors.mobile = "Enter a valid 10-digit mobile number";
+    }
+  
+    // File Validation Function
+    const validateFile = (file, fieldName) => {
+      if (!file) {
+        newErrors[fieldName] = `${fieldName}is required`;
+        return false;
+      }
+      const allowedExtensions = ["jpg", "jpeg", "pdf"];
+      const fileExt = file.name.split('.').pop().toLowerCase();
+      const fileSizeMB = file.size / (1024 * 1024);
+  
+      if (!allowedExtensions.includes(fileExt)) {
+        newErrors[fieldName] = "Only JPG and PDF files are allowed";
+        return false;
+      }
+      if (fileSizeMB > 2) {
+        newErrors[fieldName] = "File size should be less than 2MB";
+        return false;
+      }
+      return true;
+    };
+  
+      validateFile(formData.blueBookImage, "blueBookImage");
+      validateFile(formData.aadharFront, "aadharFront");
+      validateFile(formData.aadharBack, "aadharBack");
+
+
+    // If any errors exist, stop form submission
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setLoading(false);
+      return;
+    }
 
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {

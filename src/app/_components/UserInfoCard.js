@@ -1,14 +1,17 @@
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Download } from "lucide-react";
 
 const UserInfoCard = ({ userData }) => {
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
         User Information
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InfoItem label="Category" value={userData.category} />
-        <InfoItem label="Pan Options" value={userData.panOptions} />
+        {userData.category === "Pan" && <InfoItem label="Pan Options" value={userData.panOption} />}
         <InfoItem label="Name" value={userData.name} />
         <InfoItem label="Date of Birth" value={userData.dob} />
         <InfoItem label="Father's Name" value={userData.fatherName} />
@@ -16,38 +19,48 @@ const UserInfoCard = ({ userData }) => {
 
       {/* Images Section */}
       <h3 className="text-xl font-semibold mt-6 mb-4">Documents</h3>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <ImageCard title="Photo" src={userData.photo} />
-        <ImageCard title="Previous PAN" src={userData.previousPanImage} />
-        <ImageCard title="Aadhar Front" src={userData.aadharFrontImage} />
-        <ImageCard title="Aadhar Back" src={userData.aadharBackImage} />
-        <ImageCard title="Bluebook" src={userData.bluebookImage} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <FileCard title="Photo" src={userData.photo} />
+        {userData.previousPanImage && <FileCard title="Previous PAN" src={userData.previousPanImage} />}
+        <FileCard title="Bluebook" src={userData.blueBookImage} />
+        <FileCard title="Aadhar Front" src={userData.aadharFront} />
+        <FileCard title="Aadhar Back" src={userData.aadharBack} />
+        <FileCard title="Sign" src={userData.signImage} />
       </div>
     </div>
   );
 };
 
-// Info Item Component
 const InfoItem = ({ label, value }) => (
   <div className="bg-gray-100 p-3 rounded-lg shadow-sm">
     <p className="text-gray-600 text-sm">{label}</p>
-    <p className="font-semibold text-gray-800">{value}</p>
+    <p className="font-semibold text-gray-800 break-words">{value}</p>
   </div>
 );
 
-// Image Card Component
-const ImageCard = ({ title, src }) => {
+const FileCard = ({ title, src }) => {
+  if (!src) return null;
+
+  const isPDF = src.toLowerCase().endsWith(".pdf");
+
   return (
-    <div className="text-center">
-      <p className="text-sm font-medium text-gray-700">{title}</p>
-      <div className="relative w-full h-40 md:h-48 lg:h-56 rounded-lg overflow-hidden shadow">
-        <Image src={src} alt={title} layout="fill" objectFit="cover" />
+    <div className="text-center bg-gray-50 p-4 rounded-lg shadow">
+      <p className="text-sm font-medium text-gray-700 mb-2">{title}</p>
+      <div className="relative w-full h-40 md:h-48 lg:h-56 rounded-lg overflow-hidden shadow flex items-center justify-center bg-gray-200">
+        {isPDF ? (
+          <p className="text-gray-500">PDF Document</p>
+        ) : (
+          <Image src={src} alt={title} layout="fill" objectFit="cover" />
+        )}
       </div>
+      <a href={src} download className="mt-2 inline-block w-full">
+        <Button className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm sm:text-base">
+          <Download size={18} className="shrink-0 sm:size-5 md:size-6" />
+          <span className="whitespace-nowrap">Download</span>
+        </Button>
+      </a>
     </div>
   );
 };
 
-// Sample Data (Example Usage)
-
-// Render Component
 export default UserInfoCard;

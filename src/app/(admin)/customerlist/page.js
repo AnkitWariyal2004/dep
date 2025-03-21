@@ -66,6 +66,7 @@ const router=useRouter();
               {/* <th className="px-4 py-2 text-left whitespace-nowrap">Father Name</th> */}
               {/* <th className="px-4 py-2 text-left whitespace-nowrap">Status</th> */}
               <th className="px-4 py-2 text-left whitespace-nowrap">Mobile Number</th>
+              <th className="px-4 py-2 text-left whitespace-nowrap">Change Password</th>
               {/* <th className="px-4 py-2 text-left whitespace-nowrap">Remarks</th> */}
             </tr>
           </thead>
@@ -78,7 +79,14 @@ const router=useRouter();
                 {/* <td className="px-4 py-2 text-green-600 font-semibold break-words max-w-[100px] overflow-hidden text-ellipsis">{item.status}</td> */}
                 <td className="px-4 py-2 break-words max-w-[150px] overflow-hidden text-ellipsis">{item.mobileNumber}</td>
                 {/* <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">{item.remark}</td> */}
-
+                <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">
+                        <button
+                          onClick={() => router.push(`/changepass?id=${item.userId}`)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+                        >
+                          Change Password
+                        </button>
+                      </td>
               </tr>
             ))}
           </tbody>

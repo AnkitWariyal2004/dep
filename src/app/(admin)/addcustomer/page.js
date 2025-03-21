@@ -2,10 +2,12 @@
 import { useState } from "react";
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 export default function SignupPage() {
   const { data: session, status } = useSession();
-  const router = useRouter();
+  // const router = useRouter();
   const [formData, setFormData] = useState({
     mobileNumber: '',
     password: '',
@@ -32,8 +34,11 @@ export default function SignupPage() {
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || 'Signup failed');
-
+      if (!response.ok) {
+        toast.error(data.message)
+        throw new Error(data.message || 'Signup failed');
+      }
+      toast.success("Customer Added Sucessfully")
       setSuccess('Signup successful! You can now log in.');
       setFormData({ mobileNumber: '', password: '', name: '' });
       router.push('/customerlist');
@@ -48,6 +53,7 @@ export default function SignupPage() {
 
   return (
     <div className="flex justify-center items-center  bg-gray-50 p-6 sm:p-12">
+      <Toaster/>
       <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-8 sm:p-10">
         {/* <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2> */}
 

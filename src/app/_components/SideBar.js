@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Image from "next/image";
+// import Image from "next/image";
 import { redirect } from "next/navigation";
 import * as FaIcons from "react-icons/fa";
 

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 
 const Page = () => {
   const router = useRouter();
@@ -26,6 +28,9 @@ const Page = () => {
     aadharFront: '',
     previousPanImage: '',
     blueBookImage: '',
+    userId:session?.user?.id ?? '',
+    type:'debit',
+    Ammount:100,
     createdBy: session?.user?.id ?? '',  // Prevents crash if session is undefined
   });
 
@@ -55,6 +60,70 @@ const Page = () => {
     e.preventDefault();
     setLoading(true);
     setSubmitError("");
+    let newErrors = {};
+  
+    // Required Field Validations
+    if (!formData.panOption) {
+      newErrors.panOption = "PAN Card option is required";
+    }
+    if (!/[a-zA-Z]/.test(formData.name)) {
+      newErrors.name = "Name must contain at least one letter";
+    }
+    if (!formData.dob) {
+      newErrors.dob = "Date of Birth is required";
+    }
+    if (!formData.name.trim()) {
+      newErrors.name = "Name is required.";
+    }
+    if (!formData.fatherName.trim()) {
+      newErrors.fatherName = "Father's Name is required.";
+    }
+    if (!/^\d{10}$/.test(formData.mobile)) {
+      newErrors.mobile = "Enter a valid 10-digit mobile number";
+    }
+  
+    // File Validation Function
+    const validateFile = (file, fieldName) => {
+      if (!file) {
+        newErrors[fieldName] = `${fieldName} is required`;
+        return false;
+      }
+      const allowedExtensions = ["jpg", "jpeg", "pdf"];
+      const fileExt = file.name.split('.').pop().toLowerCase();
+      const fileSizeMB = file.size / (1024 * 1024);
+  
+      if (!allowedExtensions.includes(fileExt)) {
+        newErrors[fieldName] = "Only JPG and PDF files are allowed";
+        return false;
+      }
+      if (fileSizeMB > 2) {
+        newErrors[fieldName] = "File size should be less than 2MB";
+        return false;
+      }
+      return true;
+    };
+  
+    // File Upload Validations Based on PAN Option
+    if (formData.panOption === "New PAN Card") {
+      validateFile(formData.photo, "photo");
+      validateFile(formData.aadharFront, "aadharFront");
+      validateFile(formData.aadharBack, "aadharBack");
+      validateFile(formData.signImage, "signImage");
+    } else if (formData.panOption === "PAN Card Renewal") {
+      validateFile(formData.photo, "photo");
+      validateFile(formData.aadharFront, "aadharFront");
+      validateFile(formData.aadharBack, "aadharBack");
+      validateFile(formData.signImage, "signImage");
+      validateFile(formData.previousPanImage, "previousPanImage");
+    }
+  
+    // If any errors exist, stop form submission
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      setLoading(false);
+      return;
+    }
+
 
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
@@ -74,12 +143,16 @@ const Page = () => {
       const data = JSON.parse(text);
 
       if (response.ok) {
+        toast.success("Document Uploaded")
         console.log('Document added:', data);
         router.push('/documentlist');
       } else {
-        throw new Error(data.message || 'Failed to upload');
+        toast.error(data.message)
+        throw new Error(data.message || 'Failed to upload'); 
       }
     } catch (error) {
+      toast.error(error.message)
+      // toast.success(error.message)
       console.error('Failed to save document:', error);
       setSubmitError(error.message || "An error occurred while submitting.");
     } finally {
@@ -89,6 +162,7 @@ const Page = () => {
 
   return (
     <div className="grid sm:grid-cols-12 gap-4 m-4 overflow-hidden">
+      <Toaster/>
       <div className="sm:col-span-9 p-6">
         <h2 className="text-xl font-semibold mb-4 text-start">Add Documents</h2>
         <form className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -123,6 +197,17 @@ const Page = () => {
             <label className="block text-gray-600 mb-1">Upload Photo</label>
             <input type="file" name="photo" accept="image/*" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" />
           </div>
+
+          <div>
+              <label className="block text-gray-600 mb-1">Aadhar Front</label>
+              <input type="file" name="aadharFront" accept="image/*" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" />
+            </div>
+
+            <div>
+              <label className="block text-gray-600 mb-1">Aadhar Back Image</label>
+              <input type="file" name="aadharBack" accept="image/*" onChange={handleChange} className="w-full p-2 border border-gray-300 rounded-lg" />
+            </div>
+
 
           <div>
             <label className="block text-gray-600 mb-1">Father&apos;s Name</label>

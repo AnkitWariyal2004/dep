@@ -39,19 +39,28 @@ export default function RootLayout({ children }) {
         {
           title:"documents",
           children: [
-            // { title: "Add Document", icon: "FaFile" },
+            
             { title: "Document List", icon: "FaFileAlt" },
             ],
         },
+        {
+          title: "Wallet",
+          children: [
+            { title: "Add Wallet", icon: "FaWallet" },
+            { title: "Transactions", icon: "FaMoneyCheckAlt" },
+            ],
+        },
+        
 
         {
           title: "Settings",
           children: [
             { title: "Settings", icon: "FaCogs" },
-            // { title: "Change Password", icon: "FaKey" },
+            { title: "Price Setting", icon: "FaTags" },
+            { title: "Banner Setting", icon: "FaSlidersH" },
+            { title: "Promotional Banner", icon: "FaBullhorn" },
             ],
         },
-        // { title: "Settings", icon: "FaCog" },
       ];
     } else if (session?.user?.role === "customer") {
       Menus = [
@@ -66,18 +75,23 @@ export default function RootLayout({ children }) {
         {
           title: "Document",
           children: [
-            // { title: "Add Document", icon: "FaUser" },
             { title: "Document List", icon: "FaThList" },
           ],
         },
-        // {
-        //   title: "Distributer",
-        //   children: [
-        //     { title: "Add Distributer", icon: "FaNetworkWired" },
-        //     { title: "Distributer List", icon: "FaSitemap" },
-        //   ],
-        // },
-                // { title: "Settings", icon: "FaCog" },
+        {
+          title: "Wallet",
+          children: [
+            { title: "Add Wallet", icon: "FaWallet" },
+            { title: "Transactions", icon: "FaMoneyCheckAlt" },
+            ],
+        },
+        
+        {
+          title: "Settings",
+          children: [
+            { title: "Settings", icon: "FaCogs" },
+            ],
+        },
       ];
     }else if( session.user.role === "distributer"){
       Menus = [
@@ -130,9 +144,14 @@ export default function RootLayout({ children }) {
         </div>
 
         {/* Content */}
-        <div className={`overflow-y-auto p-4 flex-1 ${windowWidth <= 767 ? "mt-32" : "sm:mt-9"}`}>
-          {children}
-        </div>
+        <div
+  style={{ scrollBehavior: "smooth" }}
+  className={`overflow-y-auto p-4 flex-1 ${
+    windowWidth <= 767 ? "mt-32" : "sm:mt-9"
+  }`}
+>
+  {children}
+</div>
       </div>
     </div>
   );

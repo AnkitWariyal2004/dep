@@ -81,6 +81,7 @@ const Table = () => {
                   <>
                     <th className="px-4 py-2 text-left whitespace-nowrap">Created By</th>
                     <th className="px-4 py-2 text-left whitespace-nowrap">Edit</th>
+                    <th className="px-4 py-2 text-left whitespace-nowrap">See Documents</th>
                   </>
                 )
               }
@@ -88,7 +89,10 @@ const Table = () => {
           </thead>
           <tbody>
             {data.map((item, index) => (
-              <tr key={index} className="border-t border-gray-300">
+              <tr key={index} className={`border-t border-gray-300
+              ${
+                index %2 ===0 ?"bg-white":"bg-slate-100" 
+              }`}>
                 <td className="px-4 py-2 w-12">
                   <input
                     type="checkbox"
@@ -123,10 +127,18 @@ const Table = () => {
                           Edit
                         </button>
                       </td>
+                      
+                      <td className="px-4 py-2 break-words max-w-[200px] overflow-hidden text-ellipsis">
+                        <button
+                          onClick={() => router.push(`/user?id=${item._id}`)}
+                          className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-200"
+                        >
+                          See Documents
+                        </button>
+                      </td>
                     </>
                   )
                 }
-
               </tr>
             ))}
           </tbody>
