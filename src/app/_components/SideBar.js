@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 // import Image from "next/image";
 import { redirect } from "next/navigation";
 import * as FaIcons from "react-icons/fa";
@@ -8,6 +8,7 @@ import * as FaIcons from "react-icons/fa";
 const Sidebar = ({ isOpen, setIsOpen, activeItem, setActiveItem, Menus }) => {
   const pathname = usePathname(); // Get current URL path
 
+  const router= useRouter();
   useEffect(() => {
     if (!pathname) return;
 
@@ -72,7 +73,7 @@ const Sidebar = ({ isOpen, setIsOpen, activeItem, setActiveItem, Menus }) => {
             width={120}
             height={100}
           /> */}
-          <h1 className="text-2xl font-bold text-gray-600">EmuRecharge</h1>
+          <h1 className="text-2xl font-bold text-gray-600 cursor-pointer" onClick={()=>router.push('/dashboard')}>EmuRecharge</h1>
         </div>
 
         {/* Menu Items */}

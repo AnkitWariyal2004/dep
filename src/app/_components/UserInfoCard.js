@@ -50,7 +50,7 @@ const FileCard = ({ title, src }) => {
         {isPDF ? (
           <p className="text-gray-500">PDF Document</p>
         ) : (
-          <Image src={src} alt={title} layout="fill" objectFit="cover" />
+          <Image src={src} alt={title} layout="fill" objectFit="fill" />
         )}
       </div>
       <a href={src} download className="mt-2 inline-block w-full">
