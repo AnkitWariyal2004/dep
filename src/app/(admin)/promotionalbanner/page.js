@@ -107,7 +107,7 @@ export default function PromotionalBannerPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded-lg">
-      <Toaster/>
+      <Toaster />
       <h2 className="text-2xl font-semibold mb-4">Add Promotional Banner</h2>
       <form onSubmit={handleSubmit} className="grid gap-4">
         <input type="text" name="title" value={formData.title} onChange={handleChange} placeholder="Banner Title" className="p-2 border rounded w-full" />
@@ -129,11 +129,12 @@ export default function PromotionalBannerPage() {
         {banners.map((banner) => (
           <div key={banner._id} className="border p-4 rounded shadow-md">
             <Image
+              src={`/api/uploads${banner.image.replace("/uploads", "")}`} // Corrected path
+              alt={banner.title}
               width={400}
               height={400}
-              src={banner.image}
-              alt={banner.title}
               className="w-full h-40 object-fill rounded"
+              priority // Ensures the image loads faster
             />
             <h3 className="text-lg font-semibold mt-2">{banner.title}</h3>
             <div className="flex items-center justify-between mt-2">
@@ -148,12 +149,12 @@ export default function PromotionalBannerPage() {
                 </a>
               )}
               <button
-              onClick={() => handleDelete(banner._id)}
-              className="text-red-500 hover:text-red-700"
-              disabled={loading}
-            >
-              {loading ? "Deleting..." : "Delete"}
-            </button>
+                onClick={() => handleDelete(banner._id)}
+                className="text-red-500 hover:text-red-700"
+                disabled={loading}
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </button>
             </div>
           </div>
         ))}

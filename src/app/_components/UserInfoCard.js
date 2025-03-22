@@ -20,12 +20,15 @@ const UserInfoCard = ({ userData }) => {
       {/* Images Section */}
       <h3 className="text-xl font-semibold mt-6 mb-4">Documents</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <FileCard title="Photo" src={userData.photo} />
-        {userData.previousPanImage && <FileCard title="Previous PAN" src={userData.previousPanImage} />}
-        <FileCard title="Bluebook" src={userData.blueBookImage} />
-        <FileCard title="Aadhar Front" src={userData.aadharFront} />
-        <FileCard title="Aadhar Back" src={userData.aadharBack} />
-        <FileCard title="Sign" src={userData.signImage} />
+        <FileCard title="Photo" src={`/api/uploads${userData.photo.replace("/uploads", "")}`} />
+        {userData.previousPanImage && <FileCard title="Previous PAN" src={`/api/uploads${userData.previousPanImage.replace("/uploads", "")}`} />}
+        {
+          userData.blueBookImage &&         <FileCard title="Bluebook" src={`/api/uploads${userData.blueBookImage.replace("/uploads", "")}`} />
+        }
+
+        <FileCard title="Aadhar Front" src={`/api/uploads${userData.aadharFront.replace("/uploads", "")}`} />
+        <FileCard title="Aadhar Back" src={`/api/uploads${userData.aadharBack.replace("/uploads", "")}`} />
+        <FileCard title="Sign" src={`/api/uploads${userData.signImage.replace("/uploads", "")}`} />
       </div>
     </div>
   );

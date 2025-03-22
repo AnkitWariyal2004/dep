@@ -6,6 +6,33 @@ import dbConnect from '@/lib/dbConnect';
 import fs from 'fs';
 import PromotionalBanner from '@/lib/models/promotional';
 
+
+async function saveFile(file, subDir) {
+  if (!file) return '';
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const ext = path.extname(file.name).toLowerCase();
+  const fileName = `${uuidv4()}${ext}`;
+
+  // ✅ Allow only JPG and PDF
+  if (!['.jpg', '.jpeg', '.pdf'].includes(ext)) {
+      throw new Error('Only JPG and PDF files are allowed.');
+  }
+
+  // Save in `/uploads/` (outside `public/`)
+  const folderPath = path.join(process.cwd(), 'uploads', subDir);
+
+  if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+  }
+
+  const filePath = path.join(folderPath, fileName);
+  await writeFile(filePath, buffer);
+
+  return `/uploads/${subDir}/${fileName}`;  // Return relative path
+}
+
 export async function POST(req) {
   await dbConnect();
 
@@ -25,26 +52,6 @@ export async function POST(req) {
     }
 
     // Function to save the uploaded file
-   
-    async function saveFile(file, subDir) {
-    if (!file) return '';
-  
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const ext = path.extname(file.name).toLowerCase();
-    const fileName = `${uuidv4()}${ext}`;
-    const folderPath = path.join(process.cwd(), 'public', 'uploads', subDir);
-  
-    // ✅ Ensure the directory exists before writing the file
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-  
-    const filePath = path.join(folderPath, fileName);
-    await writeFile(filePath, buffer);
-  
-    return `/uploads/${subDir}/${fileName}`;
-  }
 
     // Save the image
     const imagePath = await saveFile(image, 'promobanner');

@@ -105,6 +105,32 @@ import Price from "@/lib/models/price";
 //   }
 // }
 
+async function saveFile(file, subDir) {
+  if (!file || file.size === 0) return "";
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const ext = path.extname(file.name).toLowerCase();
+  const fileName = `${uuidv4()}${ext}`;
+
+  // ✅ Allow only JPG and PDF
+  if (!['.jpg', '.jpeg', '.pdf'].includes(ext)) {
+      throw new Error('Only JPG and PDF files are allowed.');
+  }
+
+  // Save in `/uploads/` (outside `public/`)
+  const folderPath = path.join(process.cwd(), 'uploads', subDir);
+
+  if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+  }
+
+  const filePath = path.join(folderPath, fileName);
+  await writeFile(filePath, buffer);
+
+  return `/uploads/${subDir}/${fileName}`;  // Return relative path
+}
+
 export async function addorminus(customer,walletId,ammount,type){
   if(ammount === null){
     return {
@@ -256,27 +282,27 @@ export async function POST(req) {
     const blueBookImage = formData.get("blueBookImage");
 
     // Function to save a file and return its path
-    async function saveFile(file, subDir) {
-      if (!file || file.size === 0) return ""; // If no file uploaded, return empty string
+    // async function saveFile(file, subDir) {
+    //   if (!file || file.size === 0) return ""; // If no file uploaded, return empty string
 
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+    //   const bytes = await file.arrayBuffer();
+    //   const buffer = Buffer.from(bytes);
 
-      // Get file extension
-      const ext = path.extname(file.name).toLowerCase();
-      const fileName = `${uuidv4()}${ext}`; // Generate unique filename
-      const folderPath = path.join(process.cwd(), "public", "uploads", subDir);
+    //   // Get file extension
+    //   const ext = path.extname(file.name).toLowerCase();
+    //   const fileName = `${uuidv4()}${ext}`; // Generate unique filename
+    //   const folderPath = path.join(process.cwd(), "public", "uploads", subDir);
 
-      // Create directory if it doesn't exist
-      if (!fs.existsSync(folderPath)) {
-        fs.mkdirSync(folderPath, { recursive: true });
-      }
+    //   // Create directory if it doesn't exist
+    //   if (!fs.existsSync(folderPath)) {
+    //     fs.mkdirSync(folderPath, { recursive: true });
+    //   }
 
-      const filePath = path.join(folderPath, fileName);
-      await writeFile(filePath, buffer);
+    //   const filePath = path.join(folderPath, fileName);
+    //   await writeFile(filePath, buffer);
 
-      return `/uploads/${subDir}/${fileName}`; // Relative path for frontend
-    }
+    //   return `/uploads/${subDir}/${fileName}`; // Relative path for frontend
+    // }
 
     // Save files
     const photoPath = await saveFile(photo, "photo");

@@ -45,12 +45,14 @@ export default function Page() {
         {banners.map((banner) => (
           <div key={banner._id} className="border p-4 rounded shadow-md">
             <Image
-            width={400}
-            height={400}
-              src={banner.image}
+              src={`/api/uploads${banner.image.replace("/uploads", "")}`} // Corrected path
               alt={banner.title}
-              className="w-full h-40 object-cover rounded"
-            /> 
+              width={400}
+              height={400}
+              className="w-full h-40 object-fill rounded"
+              priority // Ensures the image loads faster
+            />
+
             <h3 className="text-lg font-semibold mt-2">{banner.title}</h3>
             {banner.link && (
               <a

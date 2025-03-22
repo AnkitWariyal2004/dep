@@ -6,7 +6,7 @@ import Image from 'next/image';
 const Page = () => {
 
   const [loading, setLoading] = useState(false);
-  const [banners, setBanners]= useState([])
+  const [banners, setBanners] = useState([])
   const [submitError, setSubmitError] = useState('');
   const [errors, setErrors] = useState({});
 
@@ -16,22 +16,22 @@ const Page = () => {
   });
 
 
-    useEffect(() => {
-      fetchBanners();
-    }, []);
-  
-    const fetchBanners = async () => {
-      try {
-        const response = await fetch('/api/bannerupload');
-        const data = await response.json();
-        console.log(data)
-        setBanners(data.data);
-        console.log(data.data)
-      } catch (error) {
-        console.error('Failed to fetch banners:', error);
-      }
-    };
-  
+  useEffect(() => {
+    fetchBanners();
+  }, []);
+
+  const fetchBanners = async () => {
+    try {
+      const response = await fetch('/api/bannerupload');
+      const data = await response.json();
+      console.log(data)
+      setBanners(data.data);
+      console.log(data.data)
+    } catch (error) {
+      console.error('Failed to fetch banners:', error);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, type, value, files } = e.target;
 
@@ -84,7 +84,7 @@ const Page = () => {
       setLoading(false);
       return;
     }
-    
+
     const formDataToSend = new FormData();
     Object.entries(formData).forEach(([key, value]) => {
       if (value) {
@@ -129,9 +129,9 @@ const Page = () => {
       const data = await response.json();
       if (data.success) {
         toast.success(data.message)
-        setFormData({ title: '', image: ''});
+        setFormData({ title: '', image: '' });
         fetchBanners();
-        
+
       } else {
         toast.error(data.message)
         console.error("Failed to delete");
@@ -145,89 +145,90 @@ const Page = () => {
 
   return (
     <>
-    <div className="grid sm:grid-cols-12 gap-4 m-4 overflow-hidden">
-      <div className="sm:col-span-9 p-6">
-        <h2 className="text-xl font-semibold mb-4 text-start">Upload Banner</h2>
-        <Toaster />
-        <form className="grid grid-cols-1 gap-4">
-          <div>
-            <label className="block text-gray-600 mb-1">Title</label>
-            <input
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter banner title"
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
+      <div className="grid sm:grid-cols-12 gap-4 m-4 overflow-hidden">
+        <div className="sm:col-span-9 p-6">
+          <h2 className="text-xl font-semibold mb-4 text-start">Upload Banner</h2>
+          <Toaster />
+          <form className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-gray-600 mb-1">Title</label>
+              <input
+                type="text"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Enter banner title"
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-600 mb-1">Upload Image</label>
+              <input
+                type="file"
+                name="image"
+                accept="image/*"
+                onChange={handleChange}
+                className="w-full p-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+
+            {Object.keys(errors).map((key) => (
+              errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>
+            ))}
+          </form>
+        </div>
+
+        <div className="sm:col-span-3 bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 text-center">Actions</h2>
+          <div className="flex flex-col gap-3">
+            <button
+              className={`w-full p-2 rounded border-2 ${loading ? 'border-gray-400 bg-gray-300 text-gray-600' : 'border-green-500 bg-transparent hover:bg-green-500 hover:text-white'}`}
+              onClick={handleSave}
+              disabled={loading}
+            >
+              {loading ? 'Uploading...' : 'Save'}
+            </button>
+            {submitError && <p className="text-red-500 text-sm mt-2">{submitError}</p>}
           </div>
-
-          <div>
-            <label className="block text-gray-600 mb-1">Upload Image</label>
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          {Object.keys(errors).map((key) => (
-            errors[key] && <p key={key} className="text-red-500 text-sm">{errors[key]}</p>
-          ))}
-        </form>
-      </div>
-
-      <div className="sm:col-span-3 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4 text-center">Actions</h2>
-        <div className="flex flex-col gap-3">
-          <button
-            className={`w-full p-2 rounded border-2 ${loading ? 'border-gray-400 bg-gray-300 text-gray-600' : 'border-green-500 bg-transparent hover:bg-green-500 hover:text-white'}`}
-            onClick={handleSave}
-            disabled={loading}
-          >
-            {loading ? 'Uploading...' : 'Save'}
-          </button>
-          {submitError && <p className="text-red-500 text-sm mt-2">{submitError}</p>}
         </div>
       </div>
-    </div>
 
 
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mt-4 w-full h-60 relative">
-            {banners.map((banner) => (
-              <div key={banner._id} className="border p-4 rounded shadow-md">
-                <Image
-                  height={300}
-                  width={450}
-                  src={banner.image}
-                  alt={banner.title}
-                  className="w-full h-40 object-fill rounded"
-                />
-                <h3 className="text-lg font-semibold mt-2">{banner.title}</h3>
-                <div className="flex items-center justify-between mt-2">
-                  {banner.link && (
-                    <a
-                      href={banner.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500"
-                    >
-                      Visit Link
-                    </a>
-                  )}
-                  <button
-                  onClick={() => handleDelete(banner._id)}
-                  className="text-red-500 hover:text-red-700"
-                  disabled={loading}
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-3 mt-4 w-full h-60 relative">
+        {banners.map((banner) => (
+          <div key={banner._id} className="border p-4 rounded shadow-md">
+            <Image
+              src={`/api/uploads${banner.image.replace("/uploads", "")}`} // Corrected path
+              alt={banner.title}
+              width={400}
+              height={400}
+              className="w-full h-40 object-fill rounded"
+              priority // Ensures the image loads faster
+            />
+            <h3 className="text-lg font-semibold mt-2">{banner.title}</h3>
+            <div className="flex items-center justify-between mt-2">
+              {banner.link && (
+                <a
+                  href={banner.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500"
                 >
-                  {loading ? "Deleting..." : "Delete"}
-                </button>
-                </div>
-              </div>
-            ))}
+                  Visit Link
+                </a>
+              )}
+              <button
+                onClick={() => handleDelete(banner._id)}
+                className="text-red-500 hover:text-red-700"
+                disabled={loading}
+              >
+                {loading ? "Deleting..." : "Delete"}
+              </button>
+            </div>
           </div>
+        ))}
+      </div>
     </>
   );
 };

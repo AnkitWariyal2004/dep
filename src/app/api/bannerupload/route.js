@@ -6,6 +6,32 @@ import dbConnect from '@/lib/dbConnect';
 import Banner from '@/lib/models/banner';
 import fs from 'fs';
 
+async function saveFile(file, subDir) {
+  if (!file) return '';
+
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const ext = path.extname(file.name).toLowerCase();
+  const fileName = `${uuidv4()}${ext}`;
+
+  // ✅ Allow only JPG and PDF
+  if (!['.jpg', '.jpeg', '.pdf'].includes(ext)) {
+      throw new Error('Only JPG and PDF files are allowed.');
+  }
+
+  // Save in `/uploads/` (outside `public/`)
+  const folderPath = path.join(process.cwd(), 'uploads', subDir);
+
+  if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+  }
+
+  const filePath = path.join(folderPath, fileName);
+  await writeFile(filePath, buffer);
+
+  return `/uploads/${subDir}/${fileName}`;  // Return relative path
+}
+
 export async function POST(req) {
   await dbConnect();
 
@@ -24,26 +50,6 @@ export async function POST(req) {
     }
 
     // Function to save the uploaded file
-   
-    async function saveFile(file, subDir) {
-    if (!file) return '';
-  
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const ext = path.extname(file.name).toLowerCase();
-    const fileName = `${uuidv4()}${ext}`;
-    const folderPath = path.join(process.cwd(), 'public', 'uploads', subDir);
-  
-    // ✅ Ensure the directory exists before writing the file
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-  
-    const filePath = path.join(folderPath, fileName);
-    await writeFile(filePath, buffer);
-  
-    return `/uploads/${subDir}/${fileName}`;
-  }
 
     // Save the image
     const imagePath = await saveFile(image, 'banners');
@@ -66,9 +72,13 @@ export async function GET(req){
   await dbConnect();
   try {
     const banners = await Banner.find().sort({ createdAt: -1 }).limit(4);
-    return new Response(JSON.stringify({ success: true, data: banners }), { status: 200});
+    return new Response(JSON.stringify({ success: true, data: banners }), { status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error('Error fetching banners:', error);
-    return new Response(JSON.stringify({ success: false, message: 'Internal Server Error', error:error.message }), { status: 500 });
+    return new Response(JSON.stringify({ success: false, message: 'Internal Server Error', error:error.message }), { status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

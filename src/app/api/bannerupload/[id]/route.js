@@ -25,23 +25,22 @@ export async function DELETE(req, { params }) {
         // console.log("Extracted Image Filename:", imageFilename);
 
         // Construct the correct file path
-        const imagePath = path.resolve(process.cwd(), "public/uploads/promobanner", imageFilename);
+                const imagePath = path.join(process.cwd(), "uploads", "banners", imageFilename);
         // console.log("Resolved Image Path:", imagePath);
 
         // Check if the file exists before deleting
-        try {
-            await fs.access(imagePath); // Ensure file exists
-            await fs.unlink(imagePath); // Delete the file
-            console.log("Image deleted successfully:", imageFilename);
-        } catch (err) {
-            console.error("File does not exist or cannot be deleted:", err.message);
-        }
+       await fs.unlink(imagePath).catch(err => {
+                   if (err.code !== "ENOENT") {
+                       console.error("Error deleting image file:", err);
+                   }
+               });
 
         // Delete the banner from the database
         await Banner.findByIdAndDelete(id);
 
         return NextResponse.json({ success: true, message: "Banner and image deleted successfully" }, { status: 200 });
     } catch (error) {
+        console.error("Delete API Error:", error);
         return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
 }

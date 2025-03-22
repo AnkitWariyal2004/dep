@@ -73,11 +73,11 @@ export default function Navbar() {
     </nav>
 
 
-    <div className="max-w-6xl mx-auto p-4 mt-24">
-  {banners.length > 0 && (
-    <div className="relative w-full h-96 rounded-lg overflow-hidden">
-      <div className="w-full h-full">
-        <Image
+      <div className="max-w-6xl mx-auto p-4 mt-24">
+        {banners.length > 0 && (
+          <div className="relative w-full h-96 rounded-lg overflow-hidden">
+            <div className="w-full h-full">
+              {/* <Image
           src={banners[currentIndex].image}
           alt={banners[currentIndex].title}
           width={0}
@@ -85,26 +85,34 @@ export default function Navbar() {
           sizes="100vw"
           className="w-full h-full object-fill"
           priority
-        />
+        /> */}
+              <Image
+                src={`/api/uploads${banners[currentIndex].image.replace("/uploads", "")}`} // Corrected path
+                alt={banners[currentIndex].title}
+                width={400}
+                height={400}
+                className="w-full h-full object-fill rounded"
+                priority // Ensures the image loads faster
+              />
+            </div>
+            <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-lg text-lg font-medium">
+              {banners[currentIndex].title}
+            </div>
+            <button
+              onClick={prevSlide}
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-3 rounded-full text-black hover:bg-opacity-75"
+            >
+              ◀
+            </button>
+            <button
+              onClick={nextSlide}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-3 rounded-full text-black hover:bg-opacity-75"
+            >
+              ▶
+            </button>
+          </div>
+        )}
       </div>
-      <div className="absolute bottom-4 left-4 bg-black bg-opacity-50 text-white p-3 rounded-lg text-lg font-medium">
-        {banners[currentIndex].title}
-      </div>
-      <button
-        onClick={prevSlide}
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-3 rounded-full text-black hover:bg-opacity-75"
-      >
-        ◀
-      </button>
-      <button
-        onClick={nextSlide}
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-50 p-3 rounded-full text-black hover:bg-opacity-75"
-      >
-        ▶
-      </button>
-    </div>
-  )}
-</div>
 
 
       <div className="flex justify-center space-x-4 ">
