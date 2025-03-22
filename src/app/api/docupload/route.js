@@ -28,17 +28,17 @@ async function saveFile(file, subDir) {
     return `/uploads/${subDir}/${fileName}`;
 }
 
-async function updateWallet(customer, walletId, amount, type) {
-    if (!amount) return { status: "failed", message: "Amount cannot be null" };
-    const wallet = await Wallet.findById(walletId);
-    if (!wallet) return { status: "failed", message: "Wallet not found" };
-    let newBalance = type === "debit" ? wallet.ammount - amount : wallet.ammount + amount;
-    if (type === "debit" && wallet.ammount < amount) return { status: "failed", message: "Insufficient balance" };
-    const transaction = await Transaction.create({ customerId: customer._id, ammount:amount, type, status: "pending", walletId, cumulative: newBalance });
-    wallet.ammount = newBalance;
-    await wallet.save();
-    return { status: "success", message: "Transaction successful", transaction };
-}
+// async function updateWallet(customer, walletId, amount, type) {
+//     if (!amount) return { status: "failed", message: "Amount cannot be null" };
+//     const wallet = await Wallet.findById(walletId);
+//     if (!wallet) return { status: "failed", message: "Wallet not found" };
+//     let newBalance = type === "debit" ? wallet.ammount - amount : wallet.ammount + amount;
+//     if (type === "debit" && wallet.ammount < amount) return { status: "failed", message: "Insufficient balance" };
+//     const transaction = await Transaction.create({ customerId: customer._id, ammount:amount, type, status: "pending", walletId, cumulative: newBalance });
+//     wallet.ammount = newBalance;
+//     await wallet.save();
+//     return { status: "success", message: "Transaction successful", transaction };
+// }
 
 export async function GET(req) {
     await dbConnect();
@@ -59,19 +59,19 @@ export async function POST(req) {
     await dbConnect();
     try {
         const formData = await req.formData();
-        const type = await formData.get("type");
+        // const type = await formData.get("type");
         const category =await  formData.get("category");
         const panOption = await formData.get("panOption");
         const userId = await formData.get("userId");
         console.log(userId)
         const customer = await Customer.findOne({ userId});
         if (!customer) return NextResponse.json({ success: false, message: "Customer not found" }, { status: 404 });
-        const userWallet = await Wallet.findOne({ customerId: customer._id });
+        // const userWallet = await Wallet.findOne({ customerId: customer._id });
         const price = await Price.findOne();
         const amount = panOption === "New PAN Card" ? price.newPenPrice : panOption === "PAN Card Renewal" ? price.renewalPenPrice : price.insurancePrice;
         console.log(amount)
-        const res = await updateWallet(customer, userWallet._id, amount, type);
-        if (res.status !== "success") return NextResponse.json({ success: false, message: res.message }, { status: 400 });
+        // const res = await updateWallet(customer, userWallet._id, amount, type);
+        // if (res.status !== "success") return NextResponse.json({ success: false, message: res.message }, { status: 400 });
         const newDoc = await Document.create({
             category,
             name: formData.get("name"),
