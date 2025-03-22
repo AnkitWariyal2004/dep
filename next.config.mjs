@@ -1,22 +1,13 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    images: {
-        domains: ["localhost"], // Allow localhost to serve images
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "52.66.102.198", // Your AWS Public IP
       },
-      async headers() {
-        return [
-          {
-            source: "/uploads/:path*", // Allow images from /uploads/
-            headers: [
-              {
-                key: "Cache-Control",
-                value: "public, max-age=31536000, immutable",
-              },
-            ],
-          },
-        ];
-      },
-    
+    ],
+  },
 };
 
 export default nextConfig;
