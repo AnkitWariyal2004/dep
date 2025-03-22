@@ -1,4 +1,4 @@
-import fs from "fs/promises";
+import fs from "fs";
 import path from "path";
 import { writeFile } from "fs/promises";
 import { v4 as uuidv4 } from "uuid";
@@ -7,64 +7,51 @@ import Document from "@/lib/models/document";
 import { NextResponse } from "next/server";
 import Customer from "@/lib/models/customer";
 import Wallet from "@/lib/models/wallet";
-import Transaction from "@/lib/models/transaction";
+import Transaction from "@/lib/models/transction";
 import Price from "@/lib/models/price";
+
+const ALLOWED_FILE_TYPES = ['.jpg', '.jpeg', '.pdf'];
+const UPLOAD_DIR = path.join(process.cwd(), 'uploads');
 
 async function saveFile(file, subDir) {
     if (!file || file.size === 0) return "";
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
     const ext = path.extname(file.name).toLowerCase();
-    const fileName = `${uuidv4()}${ext}`;
-
-    if (![".jpg", ".jpeg", ".pdf"].includes(ext)) {
+    if (!ALLOWED_FILE_TYPES.includes(ext)) {
         throw new Error("Only JPG and PDF files are allowed.");
     }
-
-    const folderPath = path.join(process.cwd(), "uploads", subDir);
-    await fs.mkdir(folderPath, { recursive: true });
-
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const fileName = `${uuidv4()}${ext}`;
+    const folderPath = path.join(UPLOAD_DIR, subDir);
+    if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath, { recursive: true });
     const filePath = path.join(folderPath, fileName);
     await writeFile(filePath, buffer);
-
     return `/uploads/${subDir}/${fileName}`;
 }
 
-export async function addOrMinus(customer, walletId, amount, type) {
-    if (!amount) {
-        return { status: "failed", message: "Amount can't be null" };
-    }
-    
-    const userWallet = await Wallet.findById(walletId);
-    if (!userWallet) return { status: "failed", message: "Wallet not found" };
+async function updateWallet(customer, walletId, amount, type) {
+    if (!amount) return { status: "failed", message: "Amount cannot be null" };
+    const wallet = await Wallet.findById(walletId);
+    if (!wallet) return { status: "failed", message: "Wallet not found" };
+    let newBalance = type === "debit" ? wallet.ammount - amount : wallet.ammount + amount;
+    if (type === "debit" && wallet.ammount < amount) return { status: "failed", message: "Insufficient balance" };
+    const transaction = await Transaction.create({ customerId: customer._id, ammount:amount, type, status: "pending", walletId, cumulative: newBalance });
+    wallet.ammount = newBalance;
+    await wallet.save();
+    return { status: "success", message: "Transaction successful", transaction };
+}
 
-    let cumulative = userWallet.amount;
-    if (type === "debit") {
-        if (userWallet.amount < amount) {
-            return { status: false, message: "Insufficient balance" };
-        }
-        cumulative -= amount;
-    } else if (type === "credit") {
-        cumulative += amount;
-    }
-
+export async function GET(req) {
+    await dbConnect();
     try {
-        const transaction = await Transaction.create({
-            customerId: customer._id,
-            amount,
-            type,
-            status: "pending",
-            walletId,
-            remark: "Transaction recorded",
-            cumulative,
-        });
-        
-        userWallet.amount = cumulative;
-        await userWallet.save();
-        return { status: "success", message: "Transaction successful", transaction };
+        const { searchParams } = new URL(req.url);
+        const role = searchParams.get("role");
+        const userID = searchParams.get("userID");
+        if (!role || !userID) return NextResponse.json({ success: false, message: "Missing role or userID" }, { status: 400 });
+        const documents = role === "admin" ? await Document.find({}).populate("createdBy", "name") : await Document.find({ createdBy: userID });
+        return NextResponse.json({ success: true, data: documents }, { status: 200 });
     } catch (error) {
-        return { status: "failed", message: "Transaction failed", error: error.message };
+        console.error("Error fetching data:", error);
+        return NextResponse.json({ success: false, message: "Internal Server Error", error: error.message }, { status: 500 });
     }
 }
 
@@ -72,27 +59,19 @@ export async function POST(req) {
     await dbConnect();
     try {
         const formData = await req.formData();
-        const type = formData.get("type");
-        const category = formData.get("category");
-        const panOption = formData.get("panOption");
-        const userId = formData.get("userId");
-        const customer = await Customer.findOne({ userId });
-        if (!customer) return NextResponse.json({ success: false, message: "Customer not found" }, { status: 400 });
-
+        const type = await formData.get("type");
+        const category =await  formData.get("category");
+        const panOption = await formData.get("panOption");
+        const userId = await formData.get("userId");
+        console.log(userId)
+        const customer = await Customer.findOne({ userId});
+        if (!customer) return NextResponse.json({ success: false, message: "Customer not found" }, { status: 404 });
         const userWallet = await Wallet.findOne({ customerId: customer._id });
-        if (!userWallet) return NextResponse.json({ success: false, message: "Wallet not found" }, { status: 400 });
-
         const price = await Price.findOne();
-        let amount =
-            panOption === "New PAN Card" ? price.newPenPrice :
-            panOption === "PAN Card Renewal" ? price.renewalPenPrice :
-            price.insurancePrice;
-
-        const res = await addOrMinus(customer, userWallet._id, amount, type);
-        if (res.status === "failed") {
-            return NextResponse.json({ success: false, message: res.message }, { status: 400 });
-        }
-
+        const amount = panOption === "New PAN Card" ? price.newPenPrice : panOption === "PAN Card Renewal" ? price.renewalPenPrice : price.insurancePrice;
+        console.log(amount)
+        const res = await updateWallet(customer, userWallet._id, amount, type);
+        if (res.status !== "success") return NextResponse.json({ success: false, message: res.message }, { status: 400 });
         const newDoc = await Document.create({
             category,
             name: formData.get("name"),
@@ -110,52 +89,13 @@ export async function POST(req) {
             aadharBack: await saveFile(formData.get("aadharBack"), "aadharback"),
             aadharFront: await saveFile(formData.get("aadharFront"), "aadharfront"),
         });
-
-        return new Response(JSON.stringify({ success: true, data: newDoc }), { status: 200 });
+        return NextResponse.json({ success: true, data: newDoc }, { status: 200 });
     } catch (error) {
         console.error("Error processing form submission:", error);
-        return new Response(JSON.stringify({ success: false, message: "Internal Server Error", error: error.message }), { status: 500 });
+        return NextResponse.json({ success: false, message: "Internal Server Error", error: error.message }, { status: 500 });
     }
 }
 
-
-
-
-export async function GET(req) {
-  try {
-    await dbConnect(); // Ensure database connection
-
-    const { searchParams } = new URL(req.url);
-    const role = searchParams.get("role");
-    const userID = searchParams.get("userID");
-
-    if (!role || !userID) {
-      return NextResponse.json({ success: false, message: "Missing role or userID" }, { status: 400 });
-    }
-
-    let documents = [];
-
-    if (role === "admin") {
-      // ✅ Fetch all documents for admin
-      documents = await Document.find({}).populate("createdBy", "name");
-    }
-    else if (role === "customer") {
-      // ✅ Fetch documents created by the user (customer)
-      documents = await Document.find({ createdBy: userID });
-    }
-    else {
-      return NextResponse.json({ success: false, message: "Invalid role" }, { status: 400 });
-    }
-
-    return NextResponse.json({ success: true, data: documents }, { status: 200 });
-  } catch (error) {
-    console.error("❌ Error fetching data:", error);
-    return NextResponse.json(
-      { success: false, message: "Internal Server Error", error: error.message },
-      { status: 500 }
-    );
-  }
-}
 
 
 
