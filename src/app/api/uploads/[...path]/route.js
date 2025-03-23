@@ -11,7 +11,7 @@ export async function GET(req, context) {
     }
 
     // Define the uploads directory
-    const uploadsDir = path.resolve(process.cwd(), "uploads");
+    const uploadsDir = path.resolve(process.cwd(), "public", "uploads");
 
     // Normalize and validate the file path
     const requestedPath = path.normalize(path.join(...params.path));
